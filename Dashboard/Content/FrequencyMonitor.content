@@ -1,0 +1,7 @@
+﻿<div id="FrequencyMonitor" data-tchmi-type="TcHmi.Controls.System.TcHmiContent" data-tchmi-top="0" data-tchmi-left="0" data-tchmi-width="572" data-tchmi-height="324">
+
+    <div id="TcHmi_Controls_System_TcHmiHtmlHost_HbarFreqChart" data-tchmi-type="TcHmi.Controls.System.TcHmiHtmlHost" data-tchmi-height="300" data-tchmi-height-unit="px" data-tchmi-left="10" data-tchmi-left-unit="px" data-tchmi-top="10" data-tchmi-top-unit="px" data-tchmi-width="550" data-tchmi-width-unit="px">
+        <canvas id="hbarChartFreq" width="500" height="250"></canvas>
+    </div>
+
+</div>

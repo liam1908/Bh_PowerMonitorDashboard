@@ -1,0 +1,35 @@
+﻿<div id="TotalDashborad" data-tchmi-type="TcHmi.Controls.System.TcHmiContent" data-tchmi-top="0" data-tchmi-left="0" data-tchmi-width="1902" data-tchmi-height="884">
+
+<div id="TcHmi_Controls_System_TcHmiRegion_Voltage_1" data-tchmi-type="TcHmi.Controls.System.TcHmiRegion" data-tchmi-height="324" data-tchmi-height-unit="px" data-tchmi-left="24" data-tchmi-left-unit="px" data-tchmi-top="24" data-tchmi-top-unit="px" data-tchmi-width="424" data-tchmi-width-unit="px" data-tchmi-target-content="Content/VoltageMonitor.content">
+
+</div>
+
+<div id="TcHmi_Controls_System_TcHmiRegion_Current_1" data-tchmi-type="TcHmi.Controls.System.TcHmiRegion" data-tchmi-height="324" data-tchmi-height-unit="px" data-tchmi-left="24" data-tchmi-left-unit="px" data-tchmi-top="358" data-tchmi-top-unit="px" data-tchmi-width="424" data-tchmi-width-unit="px" data-tchmi-target-content="Content/CurrentMonitor.content">
+
+</div>
+
+<div id="TcHmi_Controls_System_TcHmiRegion_Freq_1" data-tchmi-type="TcHmi.Controls.System.TcHmiRegion" data-tchmi-height="324" data-tchmi-height-unit="px" data-tchmi-left="467" data-tchmi-left-unit="px" data-tchmi-top="24" data-tchmi-top-unit="px" data-tchmi-width="572" data-tchmi-width-unit="px" data-tchmi-target-content="Content/FrequencyMonitor.content">
+
+</div>
+
+<div id="TcHmi_Controls_System_TcHmiRegion_BarPowerConsumption_1" data-tchmi-type="TcHmi.Controls.System.TcHmiRegion" data-tchmi-height="158" data-tchmi-height-unit="px" data-tchmi-left="467" data-tchmi-left-unit="px" data-tchmi-top="358" data-tchmi-top-unit="px" data-tchmi-width="572" data-tchmi-width-unit="px" data-tchmi-target-content="Content/PowerConsumption_Bar.content">
+
+</div>
+
+<div id="TcHmi_Controls_System_TcHmiRegion_Phi_1" data-tchmi-type="TcHmi.Controls.System.TcHmiRegion" data-tchmi-height="249" data-tchmi-height-unit="px" data-tchmi-left="475" data-tchmi-left-unit="px" data-tchmi-top="587" data-tchmi-top-unit="px" data-tchmi-width="255" data-tchmi-width-unit="px" data-tchmi-target-content="Content/PhiMonitor.content">
+
+</div>
+
+<div id="TcHmi_Controls_System_TcHmiRegion_PhiValue_1" data-tchmi-type="TcHmi.Controls.System.TcHmiRegion" data-tchmi-height="249" data-tchmi-height-unit="px" data-tchmi-left="740" data-tchmi-left-unit="px" data-tchmi-top="587" data-tchmi-top-unit="px" data-tchmi-width="255" data-tchmi-width-unit="px" data-tchmi-target-content="Content/PhiValueMonitor.content">
+
+</div>
+
+<div id="TcHmi_Controls_System_TcHmiRegion_PoweConsumptionLineChart_1" data-tchmi-type="TcHmi.Controls.System.TcHmiRegion" data-tchmi-height="505" data-tchmi-height-unit="px" data-tchmi-left="1049" data-tchmi-left-unit="px" data-tchmi-top="358" data-tchmi-top-unit="px" data-tchmi-width="745" data-tchmi-width-unit="px" data-tchmi-target-content="Content/PowerConsumptionLine.content">
+
+</div>
+
+<div id="TcHmi_Controls_System_TcHmiRegion_PowerValue_1" data-tchmi-type="TcHmi.Controls.System.TcHmiRegion" data-tchmi-height="324" data-tchmi-height-unit="px" data-tchmi-left="1049" data-tchmi-left-unit="px" data-tchmi-top="24" data-tchmi-top-unit="px" data-tchmi-width="617" data-tchmi-width-unit="px" data-tchmi-target-content="Content/PowerValueMonitor.content">
+
+</div>
+
+</div>

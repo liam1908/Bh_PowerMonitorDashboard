@@ -1,0 +1,7 @@
+﻿<div id="PowerConsumption" data-tchmi-type="TcHmi.Controls.System.TcHmiContent" data-tchmi-top="0" data-tchmi-left="0" data-tchmi-width="538" data-tchmi-height="197">
+
+    <div id="TcHmi_Controls_System_TcHmiHtmlHost_HbarPowerConsumptionChart" data-tchmi-type="TcHmi.Controls.System.TcHmiHtmlHost" data-tchmi-height="173" data-tchmi-height-unit="px" data-tchmi-left="10" data-tchmi-left-unit="px" data-tchmi-top="10" data-tchmi-top-unit="px" data-tchmi-width="515" data-tchmi-width-unit="px">
+        <canvas id="hbarChartPowerConsumption" width="250" height="70"></canvas>
+    </div>
+
+</div>

@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.12">
+  <DUT Name="ST_EL3783_InputSamples_Scaled" Id="{4c70ae45-8a2a-4da1-b1ba-ed18302a4175}">
+    <Declaration><![CDATA[TYPE ST_EL3783_InputSamples_Scaled :
+STRUCT
+(* Inputs from EL3783 *)
+	aUL1		: ARRAY[1..cOversamples] OF LREAL;
+	aUL2		: ARRAY[1..cOversamples] OF LREAL;
+	aUL3		: ARRAY[1..cOversamples] OF LREAL;
+	aIL1		: ARRAY[1..cOversamples] OF LREAL;
+	aIL2		: ARRAY[1..cOversamples] OF LREAL;
+	aIL3		: ARRAY[1..cOversamples] OF LREAL;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

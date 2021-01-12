@@ -1,0 +1,12 @@
+{
+    "enableBackup": false,
+    "historizedSymbolList": {
+        "PLC1.MAIN.fbPowerValues.stEnergy_Res.fEnergyFraction": {
+            "interval": "PT1S",
+            "maxEntries": 10000,
+            "recordingEnabled": true,
+            "rowLimit": 10000
+        }
+    },
+    "maxBackups": 1
+}

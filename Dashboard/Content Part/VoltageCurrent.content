@@ -1,0 +1,11 @@
+﻿<div id="VoltageCurrent" data-tchmi-type="TcHmi.Controls.System.TcHmiContent" data-tchmi-top="0" data-tchmi-left="0" data-tchmi-width="934" data-tchmi-height="452">
+
+<div id="TcHmi_Controls_System_TcHmiRegion_Voltage_2" data-tchmi-type="TcHmi.Controls.System.TcHmiRegion" data-tchmi-height="324" data-tchmi-height-unit="px" data-tchmi-left="22" data-tchmi-left-unit="px" data-tchmi-top="75" data-tchmi-top-unit="px" data-tchmi-width="424" data-tchmi-width-unit="px" data-tchmi-target-content="Content/VoltageMonitor.content">
+
+</div>
+
+<div id="TcHmi_Controls_System_TcHmiRegion_Current_2" data-tchmi-type="TcHmi.Controls.System.TcHmiRegion" data-tchmi-height="324" data-tchmi-height-unit="px" data-tchmi-left="475" data-tchmi-left-unit="px" data-tchmi-top="75" data-tchmi-top-unit="px" data-tchmi-width="424" data-tchmi-width-unit="px" data-tchmi-target-content="Content/CurrentMonitor.content">
+
+</div>
+
+</div>

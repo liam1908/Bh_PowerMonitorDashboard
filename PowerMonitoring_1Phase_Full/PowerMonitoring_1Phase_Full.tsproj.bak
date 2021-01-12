@@ -1,0 +1,147 @@
+<?xml version="1.0"?>
+<TcSmProject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4024.10">
+	<DataTypes>
+		<DataType>
+			<Name GUID="{DA47321A-034B-42C7-858C-5A975825452D}" AutoDeleteType="true">ST_EL3783_InputSamples</Name>
+			<BitSize>960</BitSize>
+			<SubItem>
+				<Name>aUL1</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000006}">INT</Type>
+				<ArrayInfo>
+					<LBound>1</LBound>
+					<Elements>10</Elements>
+				</ArrayInfo>
+				<Comment><![CDATA[ Inputs from EL3783 ]]></Comment>
+				<BitSize>160</BitSize>
+				<BitOffs>0</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>aUL2</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000006}">INT</Type>
+				<ArrayInfo>
+					<LBound>1</LBound>
+					<Elements>10</Elements>
+				</ArrayInfo>
+				<BitSize>160</BitSize>
+				<BitOffs>160</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>aUL3</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000006}">INT</Type>
+				<ArrayInfo>
+					<LBound>1</LBound>
+					<Elements>10</Elements>
+				</ArrayInfo>
+				<BitSize>160</BitSize>
+				<BitOffs>320</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>aIL1</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000006}">INT</Type>
+				<ArrayInfo>
+					<LBound>1</LBound>
+					<Elements>10</Elements>
+				</ArrayInfo>
+				<BitSize>160</BitSize>
+				<BitOffs>480</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>aIL2</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000006}">INT</Type>
+				<ArrayInfo>
+					<LBound>1</LBound>
+					<Elements>10</Elements>
+				</ArrayInfo>
+				<BitSize>160</BitSize>
+				<BitOffs>640</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>aIL3</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000006}">INT</Type>
+				<ArrayInfo>
+					<LBound>1</LBound>
+					<Elements>10</Elements>
+				</ArrayInfo>
+				<BitSize>160</BitSize>
+				<BitOffs>800</BitOffs>
+			</SubItem>
+			<Hides>
+				<Hide GUID="{3D54F557-5A44-4511-8636-8DCE9C2F40C4}"/>
+			</Hides>
+		</DataType>
+		<DataType>
+			<Name GUID="{604191F1-C292-416F-BD1E-CFD75694CE68}" IecBaseType="true" AutoDeleteType="true">ARRAY [0..3] OF USINT</Name>
+			<BitSize>32</BitSize>
+			<BaseType GUID="{18071995-0000-0000-0000-000000000002}">USINT</BaseType>
+			<ArrayInfo>
+				<LBound>0</LBound>
+				<Elements>4</Elements>
+			</ArrayInfo>
+		</DataType>
+	</DataTypes>
+	<Project ProjectGUID="{E60E312B-10E6-41CB-BF96-602B054AF904}" Target64Bit="true" AutoPrioManagement="true" ShowHideConfigurations="#x3c7">
+		<System>
+			<Settings>
+				<IoIdleTask Priority="6"/>
+			</Settings>
+			<Tasks>
+				<Task Id="3" Priority="4" CycleTime="10000" AmsPort="350" AdtTasks="true">
+					<Name>PlcTask</Name>
+				</Task>
+				<Task Id="4" Priority="8" CycleTime="100000" AmsPort="351" AdtTasks="true">
+					<Name>PlcTaskSlow</Name>
+				</Task>
+			</Tasks>
+		</System>
+		<Plc>
+			<Project GUID="{D080CAD1-48DD-4D3B-AE32-803C919F81A9}" Name="PowerMonitoringSample" PrjFilePath="PowerMonitoringSample\PowerMonitoringSample.plcproj" TmcFilePath="PowerMonitoringSample\PowerMonitoringSample.tmc" ReloadTmc="true" AmsPort="851" TargetArchiveSettings="#x0002" FileArchiveSettings="#x0002" SymbolicMapping="true">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="PowerMonitoringSample\PowerMonitoringSample.tmc">
+					<Name>PowerMonitoringSample Instance</Name>
+					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
+					<Vars VarGrpType="1">
+						<Name>PlcTask Inputs</Name>
+						<Var>
+							<Name>MAIN.stEL3783_1_In</Name>
+							<Type GUID="{DA47321A-034B-42C7-858C-5A975825452D}">ST_EL3783_InputSamples</Type>
+						</Var>
+					</Vars>
+					<Vars VarGrpType="1">
+						<Name>PlcTaskSlow Inputs</Name>
+						<Var>
+							<Name>MAIN.bEL3783_HcRangeActive</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.aEL3783_HcRange</Name>
+							<Type GUID="{604191F1-C292-416F-BD1E-CFD75694CE68}">ARRAY [0..3] OF USINT</Type>
+						</Var>
+					</Vars>
+					<Contexts>
+						<Context>
+							<Id NeedCalleeCall="true">0</Id>
+							<Name>PlcTask</Name>
+							<ManualConfig>
+								<OTCID>#x02010030</OTCID>
+							</ManualConfig>
+							<Priority>4</Priority>
+							<CycleTime>1000000</CycleTime>
+						</Context>
+						<Context>
+							<Id NeedCalleeCall="true">1</Id>
+							<Name>PlcTaskSlow</Name>
+							<ManualConfig>
+								<OTCID>#x02010040</OTCID>
+							</ManualConfig>
+							<Priority>8</Priority>
+							<CycleTime>10000000</CycleTime>
+						</Context>
+					</Contexts>
+					<TaskPouOids>
+						<TaskPouOid Prio="4" OTCID="#x08502002"/>
+						<TaskPouOid Prio="8" OTCID="#x08502001"/>
+					</TaskPouOids>
+				</Instance>
+			</Project>
+		</Plc>
+	</Project>
+</TcSmProject>

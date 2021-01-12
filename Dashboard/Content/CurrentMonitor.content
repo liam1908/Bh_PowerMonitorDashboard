@@ -1,0 +1,7 @@
+﻿<div id="CurrentMonitor" data-tchmi-type="TcHmi.Controls.System.TcHmiContent" data-tchmi-top="0" data-tchmi-left="0" data-tchmi-width="422" data-tchmi-height="380">
+
+<div id="TcHmiHtmlHost_BarCurrentChart" data-tchmi-type="TcHmi.Controls.System.TcHmiHtmlHost" data-tchmi-height="360" data-tchmi-height-unit="px" data-tchmi-left="10" data-tchmi-left-unit="px" data-tchmi-top="10" data-tchmi-top-unit="px" data-tchmi-width="394" data-tchmi-width-unit="px">
+        <canvas id="barChartCurrent" width="250" height="200"></canvas>
+    </div>
+
+</div>

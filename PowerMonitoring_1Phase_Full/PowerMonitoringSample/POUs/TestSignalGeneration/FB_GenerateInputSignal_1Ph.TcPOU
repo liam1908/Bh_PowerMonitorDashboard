@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.12">
+  <POU Name="FB_GenerateInputSignal_1Ph" Id="{dded9a7d-26db-4c5d-ba3c-895fa4fac83c}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_GenerateInputSignal_1Ph
+VAR_INPUT
+	fSetFrequency						: LREAL:= 50;		// Hz
+	fSetAmplitudeVoltage				: LREAL:= 325;		// peak amplitude of sin signal	
+	fSetAmplitudeCurrent				: LREAL:= 2;		// peak amplitude of sin signal	
+	fSetPhasedifferenceCurrent			: LREAL:= 0;
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	fbFunctionGeneratorVoltage_L1_1		: FB_FunctionGenerator_plusPhi;	// Signal generation
+	fbFunctionGeneratorVoltage_L1_2		: FB_FunctionGenerator_plusPhi;	// Signal generation
+	fbFunctionGeneratorCurrent_L1		: FB_FunctionGenerator_plusPhi;	// Signal generation
+	fbFunctionGeneratorCurrent_L1_2		: FB_FunctionGenerator_plusPhi;	// Signal generation
+	fbFunctionGeneratorCurrent_L1_3		: FB_FunctionGenerator_plusPhi;	// Signal generation
+
+	aBufferGen_VoltageL1_1				: ARRAY[1..cOversamples] OF LREAL;
+	aBufferGen_VoltageL1_2				: ARRAY[1..cOversamples] OF LREAL;
+	aBufferGen_CurrentL1_1				: ARRAY[1..cOversamples] OF LREAL;
+	aBufferGen_CurrentL1_2				: ARRAY[1..cOversamples] OF LREAL;
+	aBufferGen_CurrentL1_3				: ARRAY[1..cOversamples] OF LREAL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="Call" Id="{84327195-9f72-4bc5-8813-3898a0119f04}">
+      <Declaration><![CDATA[METHOD Call
+VAR CONSTANT
+	cHarm_U_FreqFactor					: LREAL	:= 20.0; // 20th harmonic
+	cHarm_U_AmpFactor					: LREAL	:= 0.1;//0.10;
+	
+	cHarm_I_FreqFactor_1				: LREAL	:= 7.0;
+	cHarm_I_AmpFactor_1					: LREAL	:= 0.015;//0.15;
+	cHarm_I_FreqFactor_2				: LREAL	:= 20.0;
+	cHarm_I_AmpFactor_2					: LREAL	:= 0.01;//0.10;
+END_VAR
+VAR_INPUT
+	bEnableHarmonics					: BOOL	:= FALSE;
+	fSetFrequency						: LREAL	:= 50;		// Hz
+	fSetAmplitudeVoltage				: LREAL	:= 325;		// peak amplitude of sin signal	
+	fSetAmplitudeCurrent				: LREAL	:= 2;		// peak amplitude of sin signal	
+	fSetPhasedifferenceCurrent			: LREAL	:= 0;
+END_VAR
+VAR_OUTPUT
+	stEL3783_Scaled						: ST_EL3783_InputSamples_Scaled;
+END_VAR
+VAR
+	i									: UDINT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[(* signal generator *)		
+// L1
+fbFunctionGeneratorVoltage_L1_1(fFrequency 	:= fSetFrequency,							// "Voltage - 1st harmonic"
+								fAmplitude 	:= fSetAmplitudeVoltage,
+								fPhi		:= 0,
+								eFunction 	:= E_FunctionType.eSine,
+								aSignal		:= aBufferGen_VoltageL1_1);		
+
+fbFunctionGeneratorVoltage_L1_2(fFrequency 	:= fSetFrequency*cHarm_U_FreqFactor,		// "Voltage - harmonic"
+								fAmplitude 	:= fSetAmplitudeVoltage*cHarm_U_AmpFactor,
+								fPhi		:= 0,
+								eFunction 	:= E_FunctionType.eSine,
+								aSignal		:= aBufferGen_VoltageL1_2);								
+
+fbFunctionGeneratorCurrent_L1(	fFrequency 	:= fSetFrequency,							// "Current - 1st harmonic"
+								fAmplitude 	:= fSetAmplitudeCurrent,
+								fPhi		:= -fSetPhasedifferenceCurrent,
+								eFunction 	:= E_FunctionType.eSine,
+								aSignal		:= aBufferGen_CurrentL1_1);	
+								
+fbFunctionGeneratorCurrent_L1_2(fFrequency 	:= fSetFrequency*cHarm_I_FreqFactor_1,		// "Voltage - harmonic"
+								fAmplitude 	:= fSetAmplitudeCurrent*cHarm_I_AmpFactor_1,
+								fPhi		:= (-fSetPhasedifferenceCurrent*cHarm_I_FreqFactor_1),
+								eFunction 	:= E_FunctionType.eSine,
+								aSignal		:= aBufferGen_CurrentL1_2);			
+
+fbFunctionGeneratorCurrent_L1_3(fFrequency 	:= fSetFrequency*cHarm_I_FreqFactor_2,		// "Voltage - harmonic"
+								fAmplitude 	:= fSetAmplitudeCurrent*cHarm_I_AmpFactor_2,
+								fPhi		:= (-fSetPhasedifferenceCurrent*cHarm_I_FreqFactor_2),
+								eFunction 	:= E_FunctionType.eSine,
+								aSignal		:= aBufferGen_CurrentL1_3);									
+				
+// harmonics
+FOR i:=1 TO cOversamples DO	
+	IF bEnableHarmonics THEN
+		stEL3783_Scaled.aUL1[i] := aBufferGen_VoltageL1_1[i] + aBufferGen_VoltageL1_2[i];
+		stEL3783_Scaled.aIL1[i] := aBufferGen_CurrentL1_1[i] + aBufferGen_CurrentL1_2[i] + aBufferGen_CurrentL1_3[i];
+	ELSE
+		stEL3783_Scaled.aUL1[i] := aBufferGen_VoltageL1_1[i];
+		stEL3783_Scaled.aIL1[i] := aBufferGen_CurrentL1_1[i];
+	END_IF
+END_FOR]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="FB_GenerateInputSignal_1Ph">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_GenerateInputSignal_1Ph.Call">
+      <LineId Id="3" Count="30" />
+      <LineId Id="99" Count="1" />
+      <LineId Id="163" Count="0" />
+      <LineId Id="101" Count="1" />
+      <LineId Id="109" Count="0" />
+      <LineId Id="165" Count="0" />
+      <LineId Id="167" Count="0" />
+      <LineId Id="166" Count="0" />
+      <LineId Id="164" Count="0" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

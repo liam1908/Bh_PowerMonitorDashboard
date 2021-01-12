@@ -1,0 +1,192 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.4">
+  <POU Name="MAIN" Id="{6a550572-7a73-4148-8a0b-5adba8f543eb}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR CONSTANT
+(* Init parameters*)
+	cSourceTimeBasedInitPars		: ST_PMA_Source_InitPars 		   		:= (nBufferLength := cOversamples);	
+	cSourceFrequencyBasedInitPars	: ST_PMA_Source_InitPars 		   		:= (nBufferLength := cBufferLength);
+
+	cFrequencyInitPars				: ST_PMA_Frequency_Period_InitPars 		:= (nBufferLength := cOversamples, fSampleRate := cSamplerate, fMinFreq := 40, fMaxFreq := 70, nPeriods := 1, nFilterOrder := 2, fCutoff := 70, eInputSelect := E_PMA_InputSelect.Voltage, fMinInput := 150);
+	cBasicValuesInitPars			: ST_PMA_BasicValues_Period_InitPars 	:= (nBufferLength := cOversamples, fSampleRate := cSamplerate, fMinInputCurrent := 0.1);
+	cPowerValuesInitPars			: ST_PMA_PowerValues_Period_InitPars 	:= (nBufferLength := cOversamples, fSampleRate := cSamplerate, fMinInputCurrent := 0.1);
+	cScalingEL3783Pars				: ST_PMA_Scaling_EL3783_InitPars 	 	:= (nOversamples  := cOversamples, fOffsetVoltage := 0, fGainVoltage := 1, fOffsetCurrent := 0, fGainCurrent := 1, fFactorCurrentTransformer := 1);													
+END_VAR
+VAR	
+(* Inputs*)
+	nInputSelect				: INT := 1; 						// 1: generate signal, 2: input EL3783
+	stEL3783_1_In 				AT%I* : ST_EL3783_InputSamples;
+	stEL3783_1_Scaled			: ST_EL3783_InputSamples_Scaled;
+	bEL3783_HcRangeActive 		AT%I* : BOOL;
+	aEL3783_HcRange 			AT%I* : ARRAY [0..3] OF USINT;	
+	
+	fbGenerateInputs			: FB_GenerateInputSignal_1Ph;									
+	fSetPhaseDiff				: LREAL := 5;	
+	fFreqSetpoint				: LREAL	:= 50;
+	fAmplitudeVoltage			: LREAL	:= 230*SQRT(2);
+	fAmplitudeCurrent			: LREAL	:= 1*SQRT(2);
+	bEnableHarmonics			: BOOL	:= FALSE;
+
+(* Functionblocks *)
+	fbScaling					: FB_PMA_Scaling_EL3783 		:= (stInitPars:= cScalingEL3783Pars);
+	fbSource_TimeBased			: FB_PMA_Source_1Ph 			:= (nOwnID:= E_AnalysisIDs.Source_TimeBased, 		aDestIDs:= [E_AnalysisIDs.Frequency_TimeBased, E_AnalysisIDs.BasicValues_TimeBased, E_AnalysisIDs.PowerValues_TimeBased], stInitPars:= cSourceTimeBasedInitPars);
+	fbSource_FrequencyBased		: FB_PMA_Source_1Ph				:= (nOwnID:= E_AnalysisIDs.Source_FrequencyBased, 	aDestIDs:= [E_AnalysisIDs.PowerValues_FrequencyBased, E_AnalysisIDs.Spectrum_FrequencyBased, E_AnalysisIDs.Harmonics_FrequencyBased], stInitPars:= cSourceFrequencyBasedInitPars);
+	fbFrequency					: FB_PMA_Frequency_Period_1Ph 	:= (nOwnID:= E_AnalysisIDs.Frequency_TimeBased, 	stInitPars:= cFrequencyInitPars);
+	fbBasicValues				: FB_PMA_BasicValues_Period_1Ph := (nOwnID:= E_AnalysisIDs.BasicValues_TimeBased, 	stInitPars:= cBasicValuesInitPars);
+	fbPowerValues				: FB_PMA_PowerValues_Period_1Ph := (nOwnID:= E_AnalysisIDs.PowerValues_TimeBased, 	stInitPars:= cPowerValuesInitPars);
+		
+(* Control *)
+	bResetStatistics			: BOOL;	
+	
+// Errorhandling
+	bError						: BOOL;
+	nCountErrors				: UDINT;
+	nEventId					: UDINT;
+	sEventClassName				: T_MaxString;
+	sSourcePath					: T_MaxString;
+	eSeverity					: TcEventSeverity;
+	ipResultMessage				: I_TcMessage;
+	
+//Liam's variable for TcHmi
+	bResetEnergyRecord : BOOL:= FALSE;
+	
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[bError := FALSE;
+
+(**************************************************************************************************************)
+(* Inputs *)
+CASE nInputSelect OF
+	1:	(* signal generation from PLC *)
+		fbGenerateInputs.Call(	bEnableHarmonics			:= bEnableHarmonics,
+								fSetFrequency				:= fFreqSetpoint,		// Hz
+								fSetAmplitudeVoltage		:= fAmplitudeVoltage,	// peak amplitude of sin signal
+								fSetAmplitudeCurrent		:= fAmplitudeCurrent,
+								fSetPhasedifferenceCurrent	:= fSetPhaseDiff,
+								stEL3783_Scaled				=> stEL3783_1_Scaled);										
+
+	2:	(* signal from terminal *)
+		InputEL3783();
+		IF fbScaling.bError THEN
+			bError := TRUE;
+			ipResultMessage := fbScaling.ipResultMessage;
+		END_IF
+END_CASE
+
+(**************************************************************************************************************)
+(* Source *)
+fbSource_TimeBased.Call(pBuffer_U:= ADR(stEL3783_1_Scaled.aUL1),			 
+						pBuffer_I:= ADR(stEL3783_1_Scaled.aIL1),
+						nDataInSizePerCh:= SIZEOF(stEL3783_1_Scaled)/6, // Caused by 3Ph Buffer!
+						nOptionPars:= 0);
+IF fbSource_TimeBased.bError THEN
+	bError := TRUE;
+	ipResultMessage := fbSource_TimeBased.ipResultMessage;
+END_IF
+	
+fbSource_FrequencyBased.Call(pBuffer_U:= ADR(stEL3783_1_Scaled.aUL1),			 
+							 pBuffer_I:= ADR(stEL3783_1_Scaled.aIL1),		
+							 nDataInSizePerCh:= SIZEOF(stEL3783_1_Scaled)/6, // Caused by 3Ph Buffer!
+							 nOptionPars:= 0);
+IF fbSource_FrequencyBased.bError THEN
+	bError := TRUE;
+	ipResultMessage := fbSource_FrequencyBased.ipResultMessage;
+END_IF
+				
+(**************************************************************************************************************)
+(* Algorithms *)
+
+(* Frequency *)
+IF NOT fbFrequency.Call(bResetStatistics:= bResetStatistics) THEN
+	bError := TRUE;
+	ipResultMessage := fbFrequency.ipResultMessage;	
+END_IF
+
+(* Basic Values *)
+IF NOT fbBasicValues.Call(fFreq:= fbFrequency.fFreq, bResetStatistics:= bResetStatistics) THEN
+	bError := TRUE;
+	ipResultMessage := fbBasicValues.ipResultMessage;
+END_IF
+
+(* Power Values *)
+
+(*Liam's Code for TcHmi control and Monitor*)
+//Thêm biến bResetEnergyRecord vào để điều khiển quá trình reset lại giá trị của kWh
+IF NOT fbPowerValues.Call(fFreq:= fbFrequency.fFreq, bResetEnergyCalc := bResetEnergyRecord, bResetStatistics:= bResetStatistics) THEN
+	bError := TRUE;
+	ipResultMessage := fbPowerValues.ipResultMessage;
+END_IF
+
+(**************************************************************************************************************)
+(* Event reporting *)
+IF ipResultMessage <> 0 THEN	
+	nEventId 		:= ipResultMessage.nEventId;
+	sSourcePath 	:= ipResultMessage.ipSourceInfo.sName;
+	eSeverity 		:= ipResultMessage.eSeverity;
+	
+	ipResultMessage.RequestEventClassName(1033, sEventClassName, SIZEOF(sEventClassName));
+END_IF
+IF bError THEN
+	nCountErrors := nCountErrors + 1;
+END_IF
+
+
+(*Liam's Code for TcHmi control and Monitor*)
+DateTimeClock();]]></ST>
+    </Implementation>
+    <Action Name="InputEL3783" Id="{126e16b6-affc-4ca5-9e43-f37e0081a998}">
+      <Implementation>
+        <ST><![CDATA[(* //Autorange
+fbScaling.Call_1Ph_Autorange(	pInputBuffer_U			:= ADR(stEL3783_1_In.aUL1), 
+								pInputBuffer_I			:= ADR(stEL3783_1_In.aIL1), 
+								nInputBufferSize		:= SIZEOF(stEL3783_1_In)/6, 
+								pOutputBuffer_U			:= ADR(stEL3783_1_Scaled.aUL1), 
+								pOutputBuffer_I			:= ADR(stEL3783_1_Scaled.aIL1), 
+								nOutputBufferSize		:= SIZEOF(stEL3783_1_Scaled)/6, 
+								bEL3783_HcRangeActive	:= bEL3783_HcRangeActive, 
+								aEL3783_HcRange			:= aEL3783_HcRange);
+
+*)		
+fbScaling.Call_1Ph(	pInputBuffer_U		:= ADR(stEL3783_1_In.aUL1), 
+					pInputBuffer_I		:= ADR(stEL3783_1_In.aIL1), 
+					nInputBufferSize	:= SIZEOF(stEL3783_1_In)/6, 
+					pOutputBuffer_U		:= ADR(stEL3783_1_Scaled.aUL1), 
+					pOutputBuffer_I		:= ADR(stEL3783_1_Scaled.aIL1), 
+					nOutputBufferSize	:= SIZEOF(stEL3783_1_Scaled)/6,
+					bUse_5A_Range		:= FALSE);						
+				]]></ST>
+      </Implementation>
+    </Action>
+    <LineIds Name="MAIN">
+      <LineId Id="164" Count="22" />
+      <LineId Id="309" Count="1" />
+      <LineId Id="189" Count="6" />
+      <LineId Id="298" Count="0" />
+      <LineId Id="239" Count="0" />
+      <LineId Id="241" Count="4" />
+      <LineId Id="238" Count="0" />
+      <LineId Id="237" Count="0" />
+      <LineId Id="196" Count="9" />
+      <LineId Id="207" Count="5" />
+      <LineId Id="357" Count="0" />
+      <LineId Id="356" Count="0" />
+      <LineId Id="363" Count="0" />
+      <LineId Id="213" Count="15" />
+      <LineId Id="2" Count="0" />
+      <LineId Id="366" Count="1" />
+      <LineId Id="365" Count="0" />
+      <LineId Id="364" Count="0" />
+    </LineIds>
+    <LineIds Name="MAIN.InputEL3783">
+      <LineId Id="24" Count="0" />
+      <LineId Id="65" Count="0" />
+      <LineId Id="26" Count="5" />
+      <LineId Id="22" Count="0" />
+      <LineId Id="32" Count="1" />
+      <LineId Id="44" Count="0" />
+      <LineId Id="48" Count="3" />
+      <LineId Id="63" Count="1" />
+      <LineId Id="53" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

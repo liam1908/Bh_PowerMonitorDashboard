@@ -1,0 +1,9 @@
+﻿<div id="PhiMonitor" data-tchmi-type="TcHmi.Controls.System.TcHmiContent" data-tchmi-top="0" data-tchmi-left="0" data-tchmi-width="372" data-tchmi-height="427">
+
+    <div id="TcHmi_Controls_System_TcHmiHtmlHost_PiePhiChart" data-tchmi-type="TcHmi.Controls.System.TcHmiHtmlHost" data-tchmi-height="266" data-tchmi-height-unit="px" data-tchmi-left="10" data-tchmi-left-unit="px" data-tchmi-top="10" data-tchmi-top-unit="px" data-tchmi-width="346" data-tchmi-width-unit="px">
+        <canvas id="pieChartPhi" width="500" height="250"></canvas>
+        <div class="chart-note-liam">Power Factor Value: <span id="power-factor-placeholder"></span></div>
+       
+    </div>
+
+</div>

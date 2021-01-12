@@ -1,0 +1,12 @@
+{
+    "CERTIFICATEEXPIRATION": "P14000D",
+    "REQUIREAUTH": 2,
+    "VIRTUALDIRECTORIES": {
+        "/": "D:\\WORK SPACE\\Beckhoff Internship\\Power Monitoring Dashboard\\PowerMonitoring_1Phase_Full - WithHMI_2\\Dashboard",
+        "/Beckhoff.TwinCAT.HMI.Controls": "D:\\WORK SPACE\\Beckhoff Internship\\Power Monitoring Dashboard\\PowerMonitoring_1Phase_Full - WithHMI_2\\Packages\\Beckhoff.TwinCAT.HMI.Controls.12.742.1\\runtimes\\native1.12-tchmi",
+        "/Beckhoff.TwinCAT.HMI.Functions": "D:\\WORK SPACE\\Beckhoff Internship\\Power Monitoring Dashboard\\PowerMonitoring_1Phase_Full - WithHMI_2\\Packages\\Beckhoff.TwinCAT.HMI.Functions.12.742.1\\runtimes\\native1.12-tchmi",
+        "/bin": "D:\\WORK SPACE\\Beckhoff Internship\\Power Monitoring Dashboard\\PowerMonitoring_1Phase_Full - WithHMI_2\\Dashboard\\bin\\",
+        "/bin/framework": "D:\\WORK SPACE\\Beckhoff Internship\\Power Monitoring Dashboard\\PowerMonitoring_1Phase_Full - WithHMI_2\\Dashboard\\bin\\framework",
+        "/framework": "D:\\WORK SPACE\\Beckhoff Internship\\Power Monitoring Dashboard\\PowerMonitoring_1Phase_Full - WithHMI_2\\Packages\\Beckhoff.TwinCAT.HMI.Framework.12.742.1\\runtimes\\native1.12-tchmi"
+    }
+}

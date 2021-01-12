@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.4">
+  <POU Name="DateTimeClock" Id="{f5ebd054-3e54-4bb4-aa3f-030dcd939f8c}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM DateTimeClock
+VAR
+	fbSystemTime		: FB_LocalSystemTime;
+	dtCurrentDateTime	: DT;
+	sCurrentDateTime	: STRING;
+	dateDate : DATE;
+	todTime : TOD;
+	sDate : STRING;
+	sTime : STRING;
+	fbLow_5m			: TON;
+	fbHigh_5m			: TOF;
+	pulse5m :BOOL;
+	
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[fbSystemTime(sNetID:='', bEnable:= TRUE, dwCycle:= 5, dwOpt:= 1);	
+dtCurrentDateTime	:= SYSTEMTIME_TO_DT(fbSystemTime.systemTime);
+sCurrentDateTime	:= MID(DT_TO_STRING(dtCurrentDateTime), 19, 4);
+dateDate := DT_TO_DATE(dtCurrentDateTime);
+todTime := DT_TO_TOD (dtCurrentDateTime);
+sDate := DATE_TO_STRING (dateDate);
+sTime := TOD_TO_STRING (todTime);
+fbLow_5m(IN			:= NOT pulse5m, PT:= T#1M);
+fbHigh_5m(IN		:= fbLow_5m.Q, PT:= T#1M, Q => pulse5m);]]></ST>
+    </Implementation>
+    <LineIds Name="DateTimeClock">
+      <LineId Id="9" Count="0" />
+      <LineId Id="11" Count="0" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="17" Count="1" />
+      <LineId Id="21" Count="1" />
+      <LineId Id="36" Count="0" />
+      <LineId Id="35" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

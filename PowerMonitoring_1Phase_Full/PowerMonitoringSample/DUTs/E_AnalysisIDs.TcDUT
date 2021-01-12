@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.12">
+  <DUT Name="E_AnalysisIDs" Id="{cd18dd73-84e3-4dc8-b17e-17c7d56229f2}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE E_AnalysisIDs :
+(
+(* analysis chain TimeBased *)
+	 Source_TimeBased :=1,
+	 Frequency_TimeBased,
+	 BasicValues_TimeBased,
+	 PowerValues_TimeBased,
+(* analysis chain FrequencyBased *)	
+	Source_FrequencyBased,
+	PowerValues_FrequencyBased,
+	Spectrum_FrequencyBased,
+	Harmonics_FrequencyBased	
+) UDINT;
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

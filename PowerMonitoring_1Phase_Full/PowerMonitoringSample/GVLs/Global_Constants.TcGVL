@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.12">
+  <GVL Name="Global_Constants" Id="{7895cd70-9839-467a-a3ac-197c0f145344}">
+    <Declaration><![CDATA[VAR_GLOBAL CONSTANT
+	cOversamples			: UDINT := 10;
+	cSamplerate				: UDINT := 10_000;
+(*
+	cFFTLength				: UDINT := 2048;
+	cWindowLength			: UDINT := 1600;	
+*)	
+	cFFTLength				: UDINT := 4096;
+	cWindowLength			: UDINT := 3200;
+
+	cBufferLength			: UDINT := cWindowLength/2;
+	
+	cHarmonicBands			: UDINT := 20;
+	cNumQuantiles			: UDINT := 2;
+	cFreqMode				: LREAL := 50.0;
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

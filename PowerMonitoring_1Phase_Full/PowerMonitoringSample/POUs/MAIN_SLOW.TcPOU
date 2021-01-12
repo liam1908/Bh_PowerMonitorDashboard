@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.12">
+  <POU Name="MAIN_SLOW" Id="{078b40b6-db25-44ed-995d-5a078bb50be1}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN_SLOW
+VAR CONSTANT
+(* Init parameters *)	
+	// FB_PMA_PowerValues																																																				
+	cPowerValuesInitPars		: ST_PMA_PowerValues_InitPars:=(fTimeLagCurrentTransformer	:= 0,
+																fSampleRate					:= cSamplerate,		// in Hz 
+																fBaseFreq					:= cFreqMode,		// in Hz
+																nFFT_Length					:= cFFTLength,
+																nWindowLength				:= cWindowLength,
+																nNumBands					:= cHarmonicBands,
+																fBandwidth					:= 20.0,
+																eWindowType					:= E_PMA_WindowType.HannWindow);
+	// FB_PMA_Spectrum
+	cSpectrumInitPars			: ST_PMA_Spectrum_InitPars:=(	nFFT_Length					:= cFFTLength,
+																nWindowLength				:= cWindowLength, 
+																fSampleRate					:= cSamplerate,		// in Hz
+																fDecibelThreshold 			:= GVL_PMA.cMinArgLog10,
+																bTransformToDecibel			:= FALSE,             
+																eWindowType					:= E_PMA_WindowType.HannWindow,
+																eScalingType				:= E_PMA_ScalingType.NoScaling );		
+	// FB_PMA_Harmonics										
+	cHarmonicsInitPars			: ST_PMA_Harmonics_InitPars:=(	nFFT_Length					:= cFFTLength,
+																nWindowLength				:= cWindowLength,
+																fSampleRate					:= cSamplerate,		// in Hz
+																nNumBands					:= cHarmonicBands,
+																fBaseFreq					:= cFreqMode,		// in Hz
+																fBandwidth					:= 20.0,
+																eWindowType					:= E_PMA_WindowType.HannWindow,	
+																bTransformToDecibel			:= FALSE,		
+																fDecibelThreshold			:= GVL_PMA.cMinArgLog10,
+																bTransformToPercent			:= TRUE);
+END_VAR
+VAR
+(* Functionblocks *)
+	fbPowerValues				: FB_PMA_PowerValues_1Ph := (nOwnID:= E_AnalysisIDs.PowerValues_FrequencyBased, stInitPars:= cPowerValuesInitPars);
+	fbSpectrum					: FB_PMA_Spectrum_1Ph	 := (nOwnID:= E_AnalysisIDs.Spectrum_FrequencyBased, 	stInitPars:= cSpectrumInitPars);
+	fbHarmonics					: FB_PMA_Harmonics_1Ph	 := (nOwnID:= E_AnalysisIDs.Harmonics_FrequencyBased,	stInitPars:= cHarmonicsInitPars);
+	
+(* Results *)
+	// FB_PMA_Spectrum
+	aSpectrum					: ARRAY[0..1, 0..cFFTLength/2] OF LREAL;	// dims: (NumPhases*2 | FFTLength/2 + 1)
+	// FB_PMA_Harmonics
+	aHarmonics					: ARRAY[0..1, 0..cHarmonicBands-1] OF LREAL; // dims: (NumPhases*2 | NumBands)
+	
+(* Control *)
+	bResetStatistics			: BOOL;	
+	bResetEnergyCalculation		: BOOL;
+	
+(* Errorhandling *)
+	bError						: BOOL;
+	nCountErrors				: UDINT;
+	nEventId					: UDINT;
+	sEventClassName				: T_MaxString;
+	sSourcePath					: T_MaxString;
+	eSeverity					: TcEventSeverity;
+	ipResultMessage				: I_TcMessage;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[bError := FALSE;
+
+(**************************************************************************************************************)
+(* Algorithms *)
+
+(* Power Values *)
+IF NOT fbPowerValues.Call(	bResetEnergyCalc	:= bResetEnergyCalculation,
+							bResetStatistics	:= bResetStatistics)	
+THEN
+	bError := TRUE;
+	ipResultMessage := fbPowerValues.ipResultMessage;
+END_IF
+
+(*Spectrum*)
+IF NOT fbSpectrum.Call(	ADR(aSpectrum[0,0]), 
+						ADR(aSpectrum[1,0]), 
+						SIZEOF(aSpectrum)/2)
+THEN
+	bError := TRUE;
+	ipResultMessage := fbSpectrum.ipResultMessage;
+END_IF
+
+(* Harmonics *)
+IF NOT fbHarmonics.Call(	bResetStatistics	:= bResetStatistics,
+							pHarmonicsRMS_U		:= ADR(aHarmonics[0,0]),
+							pHarmonicsRMS_I		:= ADR(aHarmonics[1,0]),
+							nHarmonicsRMSSize	:= SIZEOF(aHarmonics)/2)
+THEN
+	bError := TRUE;
+	ipResultMessage := fbHarmonics.ipResultMessage;
+END_IF
+
+(**************************************************************************************************************)
+(* Event reporting *)
+IF ipResultMessage <> 0 THEN	
+	nEventId 		:= ipResultMessage.nEventId;
+	sSourcePath 	:= ipResultMessage.ipSourceInfo.sName;
+	eSeverity 		:= ipResultMessage.eSeverity;
+	
+	ipResultMessage.RequestEventClassName(1033, sEventClassName, SIZEOF(sEventClassName));
+END_IF
+IF bError THEN
+	nCountErrors := nCountErrors + 1;
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN_SLOW">
+      <LineId Id="94" Count="1" />
+      <LineId Id="93" Count="0" />
+      <LineId Id="86" Count="0" />
+      <LineId Id="103" Count="1" />
+      <LineId Id="119" Count="0" />
+      <LineId Id="105" Count="0" />
+      <LineId Id="121" Count="0" />
+      <LineId Id="106" Count="1" />
+      <LineId Id="96" Count="0" />
+      <LineId Id="203" Count="0" />
+      <LineId Id="135" Count="1" />
+      <LineId Id="139" Count="4" />
+      <LineId Id="97" Count="0" />
+      <LineId Id="144" Count="0" />
+      <LineId Id="108" Count="0" />
+      <LineId Id="113" Count="1" />
+      <LineId Id="109" Count="0" />
+      <LineId Id="117" Count="1" />
+      <LineId Id="110" Count="1" />
+      <LineId Id="88" Count="0" />
+      <LineId Id="112" Count="0" />
+      <LineId Id="75" Count="10" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
